@@ -1,0 +1,33 @@
+<button onclick="getDiagnosis()">Get Diagnosis</button>
+
+<script>
+    async function getDiagnosis() {
+        const selectedSymptoms = Array.from(document.querySelectorAll('#symptoms input:checked'))
+            .map(checkbox => checkbox.value);
+
+        if (selectedSymptoms.length === 0) {
+            alert("Please select at least one symptom.");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/diagnose', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ symptoms: selectedSymptoms }),
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                alert(`Error: ${data.error}`);
+            } else {
+                alert(`Possible Diagnoses:\n\n${data.diagnoses}`);
+            }
+        } catch (error) {
+            console.error("Error fetching diagnosis:", error);
+            alert("Failed to fetch diagnosis. Please try again.");
+        }
+    }
+</script>
