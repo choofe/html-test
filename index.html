@@ -37,7 +37,8 @@
   <button onclick="getDiagnosis()">Get Diagnosis</button>
 
   <script>
-    const baseUrl = "https://pythonbackend-production.up.railway.app/";
+      const baseUrl = window.location.origin;
+
 
     async function fetchBodyParts() {
       try {
