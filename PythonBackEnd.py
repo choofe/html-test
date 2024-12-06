@@ -62,6 +62,10 @@ symptoms = {
 # Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/ping")
+def ping():
+    return {"message": "pong"}
+
 @app.get("/")
 def read_root():
     """Serve the main HTML file."""
