@@ -33,7 +33,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-port = int(os.getenv("PORT", 8000))
+#port = int(os.getenv("PORT", 8000))
 
 
 if __name__ == "__main__":
