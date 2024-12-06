@@ -1,15 +1,26 @@
 import os
 import openai
+import logging
 from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import FastAPI
+from fastapi import Request
 
 # Initialize FastAPI app
 app = FastAPI()
 
+
+logger = logging.getLogger("uvicorn.error")
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Request URL: {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response status: {response.status_code}")
+    return response
 
 
 
