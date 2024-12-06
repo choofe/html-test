@@ -10,6 +10,10 @@ from fastapi import FastAPI
 # Initialize FastAPI app
 app = FastAPI()
 
+
+
+
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -47,7 +51,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 def read_root():
     """Serve the main HTML file."""
-    return FileResponse("static/index.html")
+    file_path = "static/index.html"
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+    return FileResponse(file_path)
 
 @app.get("/body-parts")
 def get_body_parts():
