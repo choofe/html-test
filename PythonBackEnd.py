@@ -67,7 +67,7 @@ def read_root():
     """Serve the main HTML file from the root directory."""
     file_path = "index.html"
     if not os.path.exists(file_path):
-        print(f"File not found: {file_path}")
+        return {"error": "index.html not found in the root directory."}
     return FileResponse(file_path)
 @app.get("/ping")
 def ping():
