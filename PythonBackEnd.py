@@ -62,17 +62,16 @@ symptoms = {
 # Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/ping")
-def ping():
-    return {"message": "pong"}
-
 @app.get("/")
 def read_root():
-    """Serve the main HTML file."""
-    file_path = "static/index.html"
+    """Serve the main HTML file from the root directory."""
+    file_path = "index.html"
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
     return FileResponse(file_path)
+@app.get("/ping")
+def ping():
+    return {"message": "pong"}
 
 @app.get("/body-parts")
 def get_body_parts():
