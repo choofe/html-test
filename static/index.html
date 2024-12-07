@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Body Part Selector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    label, select, div {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Body Part Selector</h1>
+
+  <label for="body-part">Choose a body part:</label>
+  <select id="body-part" onchange="fetchOrgans()">
+    <option value="">--Select--</option>
+  </select>
+
+  <br><br>
+
+  <label for="organ">Choose an organ:</label>
+  <select id="organ" onchange="fetchSymptoms()">
+    <option value="">--Select--</option>
+  </select>
+
+  <br><br>
+
+  <label for="symptoms">Choose symptoms:</label>
+  <div id="symptoms"></div>
+
+  <button onclick="getDiagnosis()">Get Diagnosis</button>
+
+  <script>
+      const baseUrl = window.location.origin;
+
+
+    async function fetchBodyParts() {
+      try {
+        const response = await fetch(`${baseUrl}/body-parts`);
+        const data = await response.json();
+        const bodyPartSelect = document.getElementById('body-part');
+        data.forEach(part => {
+          const option = document.createElement('option');
+          option.value = part;
+          option.textContent = part;
+          bodyPartSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error fetching body parts:", error);
+      }
+    }
+
+    async function fetchOrgans() {
+      const bodyPart = document.getElementById('body-part').value;
+      if (!bodyPart) return;
+      try {
+        const response = await fetch(`${baseUrl}/organs?body_part=${bodyPart}`);
+        const data = await response.json();
+        const organSelect = document.getElementById('organ');
+        organSelect.innerHTML = '<option value="">--Select--</option>';
+        data.forEach(organ => {
+          const option = document.createElement('option');
+          option.value = organ;
+          option.textContent = organ;
+          organSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error fetching organs:", error);
+      }
+    }
+
+    async function fetchSymptoms() {
+      const organ = document.getElementById('organ').value;
+      if (!organ) return;
+      try {
+        const response = await fetch(`${baseUrl}/symptoms?organ=${organ}`);
+        const data = await response.json();
+        const symptomsDiv = document.getElementById('symptoms');
+        symptomsDiv.innerHTML = '';
+        data.forEach(symptom => {
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.id = symptom;
+          checkbox.value = symptom;
+          const label = document.createElement('label');
+          label.htmlFor = symptom;
+          label.textContent = symptom;
+          symptomsDiv.appendChild(checkbox);
+          symptomsDiv.appendChild(label);
+          symptomsDiv.appendChild(document.createElement('br'));
+        });
+      } catch (error) {
+        console.error("Error fetching symptoms:", error);
+      }
+    }
+
+    async function getDiagnosis() {
+      const selectedSymptoms = Array.from(document.querySelectorAll('#symptoms input:checked'))
+        .map(checkbox => checkbox.value);
+
+      if (selectedSymptoms.length === 0) {
+        alert("Please select at least one symptom.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${baseUrl}/diagnose`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ symptoms: selectedSymptoms }),
+        });
+        const data = await response.json();
+
+        if (data.error) {
+          alert(`Error: ${data.error}`);
+        } else {
+          alert(`Possible Diagnoses:\n\n${data.diagnoses}`);
+        }
+      } catch (error) {
+        console.error("Error fetching diagnosis:", error);
+        alert("Failed to fetch diagnosis. Please try again.");
+      }
+    }
+
+    // Initialize the app
+    fetchBodyParts();
+  </script>
+</body>
+</html>
